@@ -161,6 +161,10 @@ class Email_Subscriber {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'email_subscription_plugin_settings_menu' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'email_subscription_plugin_settings_init' );
 
+		// Add an AJAX action for adding email subscriptions
+		$this->loader->add_action( 'wp_ajax_add_email_subscription', $plugin_admin, 'add_email_subscription_callback' );
+		$this->loader->add_action( 'wp_ajax_nopriv_add_email_subscription', $plugin_admin, 'add_email_subscription_callback' );	
+
 	}
 
 	/**

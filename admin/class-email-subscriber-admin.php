@@ -137,4 +137,74 @@ class Email_Subscriber_Admin {
 		echo '<input type="number" name="email_subscription_num_links" value="' . esc_attr( $num_links ) . '" min="1" max="10">';
 	}
 
+	public function add_email_subscription_callback() {
+		$email = sanitize_email( $_POST['email'] );
+
+		echo $email;
+	
+		// Check if the email is valid
+		if ( ! is_email( $email ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid email address' ) );
+		}
+	
+		// Add the email to the database
+		$result = $this->add_email_subscription( $email );
+	
+		// Send a notification email
+		$this->send_subscription_notification( $email );
+	
+		if ( $result ) {
+			wp_send_json_success( array( 'message' => 'You have been subscribed successfully.' ) );
+		} else {
+			wp_send_json_error( array( 'message' => 'An error occurred while subscribing. Please try again later.' ) );
+		}
+	}
+	
+	// Add a function for adding email subscriptions to the database
+	public function add_email_subscription( $email ) {
+		global $wpdb;
+	
+		$table_name = $wpdb->prefix . 'email_subscriptions';
+	
+		$result = $wpdb->insert(
+			$table_name,
+			array(
+				'email' => $email,
+				'date_added' => current_time( 'mysql' )
+			)
+		);
+	
+		if ( $result === false ) {
+			error_log( 'Failed to insert email subscription: ' . $wpdb->last_error );
+			return false;
+		}
+	
+		return true;
+	}
+	
+	
+	// Add a function for sending subscription notification emails
+	public function send_subscription_notification( $email ) {
+		$num_links = get_option( 'email_subscription_num_links', 3 );
+	
+		$recent_posts = wp_get_recent_posts( array(
+			'numberposts' => $num_links,
+			'post_status' => 'publish'
+		) );
+	
+		$post_links = array();
+		foreach ( $recent_posts as $post ) {
+			$post_links[] = '<a href="' . get_permalink( $post['ID'] ) . '">' . $post['post_title'] . '</a>';
+		}
+	
+		$headers = array();
+		$headers[] = 'Content-Type: text/html; charset=UTF-8';
+	
+		$subject = 'New subscription';
+		$message = 'Thank you for subscribing to our newsletter. Here are the links to our latest posts:<br><br>';
+		$message .= implode( '<br>', $post_links );
+	
+		wp_mail( $email, $subject, $message, $headers );
+	}
+
 }
