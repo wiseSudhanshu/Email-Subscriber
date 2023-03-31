@@ -100,4 +100,39 @@ class Email_Subscriber_Public {
 
 	}
 
+	public function subscription_form_shortcode() {
+		ob_start();
+		?>
+		<div id="subscription-form">
+			<form action="#" method="post">
+				<label for="email">Email Address:</label>
+				<input type="email" name="email" id="email" required>
+				<button type="submit" id="subscribe-me">Subscribe Me</button>
+			</form>
+			<div id="subscription-message"></div>
+		</div>
+
+		<script>
+			jQuery(document).ready(function($) {
+				$('#subscribe-me').on('click', function(e) {
+					e.preventDefault();
+
+					var email = $('#email').val();
+					var data = {
+						action: 'add_email_subscription',
+						email: email
+					};
+
+					$.post('<?php echo admin_url( 'admin-ajax.php' ); ?>', data, function(response) {
+						var result = response.data;
+						$('#subscription-message').html(result.message);
+					});
+				});
+			});
+		</script>
+
+		<?php
+		return ob_get_clean();
+	}
+
 }

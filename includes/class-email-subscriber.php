@@ -173,6 +173,9 @@ class Email_Subscriber {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+		// Add a shortcode for the subscription form
+		add_shortcode( 'subscription_form', array($plugin_public, 'subscription_form_shortcode') );
+
 	}
 
 	/**
