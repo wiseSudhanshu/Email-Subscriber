@@ -100,4 +100,41 @@ class Email_Subscriber_Admin {
 
 	}
 
+	public function email_subscription_plugin_settings_page() {
+		?>
+		<div class="wrap">
+			<h1>Email Subscription Plugin Settings</h1>
+	
+			<form action="options.php" method="post">
+				<?php settings_fields( 'email_subscription_plugin_settings_group' ); ?>
+				<?php do_settings_sections( 'email_subscription_plugin_settings_page' ); ?>
+				<?php submit_button(); ?>
+			</form>
+		</div>
+		<?php
+	}
+
+	public function email_subscription_plugin_settings_menu() {
+		add_options_page(
+			'Email Subscription Plugin Settings',
+			'Email Subscription',
+			'manage_options',
+			'email-subscription-plugin-settings',
+			array($this, 'email_subscription_plugin_settings_page')
+		);
+	}
+	
+	public function email_subscription_plugin_settings_init() {
+		register_setting( 'email_subscription_plugin_settings_group', 'email_subscription_num_links' );
+	
+		add_settings_section( 'email_subscription_plugin_settings_section', 'Notification Email Settings', '', 'email_subscription_plugin_settings_page' );
+		
+		add_settings_field( 'email_subscription_num_links', 'Number of links to include in the notification email:', array($this, 'email_subscription_num_links_field'), 'email_subscription_plugin_settings_page', 'email_subscription_plugin_settings_section' );
+	}
+	
+	public function email_subscription_num_links_field() {
+		$num_links = get_option( 'email_subscription_num_links', 3 );
+		echo '<input type="number" name="email_subscription_num_links" value="' . esc_attr( $num_links ) . '" min="1" max="10">';
+	}
+
 }

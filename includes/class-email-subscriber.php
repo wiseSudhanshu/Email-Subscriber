@@ -157,6 +157,10 @@ class Email_Subscriber {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+		// Add a settings page for the plugin
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'email_subscription_plugin_settings_menu' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'email_subscription_plugin_settings_init' );
+
 	}
 
 	/**
