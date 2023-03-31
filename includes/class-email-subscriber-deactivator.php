@@ -30,7 +30,12 @@ class Email_Subscriber_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
+		global $wpdb;
 
+		// dropping tables on plugin uninstall
+		$table_name = $wpdb->prefix . 'email_subscriptions';
+		
+		$wpdb->query("DROP TABLE IF EXISTS $table_name");
 	}
 
 }
